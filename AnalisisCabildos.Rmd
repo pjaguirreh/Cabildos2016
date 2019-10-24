@@ -1,0 +1,65 @@
+---
+title: 'Constitución Abierta: Una Nueva Constitución Para Chile'
+output: github_document
+---
+
+**EN DESARROLLO**
+
+Ejercicio iniciado a partir de [Datos de Miércoles](https://github.com/cienciadedatos/datos-de-miercoles/tree/master/datos/2019/2019-10-23)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+conceptos <- get(load("datos/01-conceptos.rdata")) %>% 
+  mutate(
+    acuerdo = recode(acuerdo,
+      ":Acuerdo" = "Acuerdo",
+      ":Acuerdo Parcial" = "Acuerdo Parcial"
+      )
+    )
+
+memoria <- get(load("datos/02-memoria.rdata"))
+```
+
+```{r}
+conceptos %>% 
+  group_by(acuerdo) %>% 
+  tally()
+```
+
+```{r}
+conceptos %>% 
+  filter(acuerdo == "Acuerdo") %>% 
+  count(concepto, sort = TRUE) %>% 
+  top_n(10)
+
+conceptos %>% 
+  filter(acuerdo == "Desacuerdo") %>% 
+  count(concepto, sort = TRUE) %>% 
+  top_n(10)
+```
+
+```{r}
+conceptos %>% 
+  filter(acuerdo == "Acuerdo") %>% 
+  group_by(region) %>% 
+  count(concepto, sort = TRUE) %>% 
+  top_n(10) %>% 
+  ungroup() %>% 
+  ggplot(aes(concepto, n)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~region, scales = "free")
+```
+
+
+
+
+
+
