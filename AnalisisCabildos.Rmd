@@ -29,6 +29,14 @@ memoria <- get(load("datos/02-memoria.rdata"))
 
 ```{r}
 conceptos %>% 
+  distinct(idELA, region) %>% 
+  count(region)
+```
+
+
+```{r}
+conceptos %>% 
+  distinct(concepto, acuerdo) %>% 
   group_by(acuerdo) %>% 
   tally()
 ```
@@ -58,6 +66,33 @@ conceptos %>%
   facet_wrap(~region, scales = "free")
 ```
 
+```{r}
+porcentaje_acuerdo <- conceptos %>% 
+  mutate(Acuerdo1 = ifelse(acuerdo == "Acuerdo", 1, 0)) %>% 
+  group_by(idELA) %>% 
+  summarise(n = n(),
+            Acuerdo = sum(Acuerdo1)) %>% 
+  transmute(idELA, per_acuerdo = round((Acuerdo/n)*100, 2)) %>% 
+  left_join(distinct(conceptos, idELA, region, comuna)) 
+
+porcentaje_acuerdo %>% 
+  arrange(per_acuerdo)
+
+porcentaje_acuerdo %>% 
+  ggplot(aes(x = per_acuerdo)) +
+  geom_histogram()
+
+
+porcentaje_acuerdo %>% 
+  group_by(region) %>% 
+  summarise(per_acuerdo = mean(per_acuerdo)) %>% 
+  arrange(per_acuerdo)
+
+porcentaje_acuerdo %>% 
+  group_by(comuna) %>% 
+  summarise(per_acuerdo = mean(per_acuerdo)) %>% 
+  arrange(per_acuerdo)
+```
 
 
 
